@@ -1,0 +1,14 @@
+
+canvas
+{
+ border: solid rgb(100,200,300) 8px;
+ background-color: palegreen;
+ position: absolute;
+ margin: auto;
+}
+
+body
+{
+    background-color:rgb(78, 109, 112);
+}
+
