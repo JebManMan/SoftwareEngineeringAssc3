@@ -1,0 +1,36 @@
+<html>
+<head>
+	<title>JavaScript Game</title>
+	<style>
+		html {
+			background-color: rgb(150,0,150);
+		}
+		#canvas {
+			position: absolute;
+			top:0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			margin:auto;
+			border: solid rgb(400,400,300) 4px;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas" width="400" height="300"> </canvas>
+	
+	<script>
+		window.onload = window.onresize = function() {
+			var canvas = document.getElementById('canvas');
+			canvas.width = window.innerWidth * 0.9;
+			canvas.height = window.innerHeight * 0.8;
+		}
+
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+		
+		
+		
+	</script>
+</body>
+</html>
