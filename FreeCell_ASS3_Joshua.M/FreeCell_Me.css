@@ -1,10 +1,10 @@
 
-canvas
+#canvas
 {
- border: solid rgb(100,200,300) 8px;
- background-color: palegreen;
- position: absolute;
  margin: auto;
+ text-align: center;
+ border: solid rgb(100,200,300) 8px;
+ background-color: rgb(163, 212, 163);
 }
 
 body
