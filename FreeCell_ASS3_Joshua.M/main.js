@@ -10,22 +10,53 @@ var ctx = canvas.getContext("2d");
 
 class FreeCellGame 
 {
-    constructor()
+    constructor(numberOfTableaus = 8, numberOfFreeCells = 4)
     {
         this.deck = new Deck();
         this.canvas = document.getElementById("canvas");
-        this.tableaus = []
-        this.freeCells = []
-        this.foundations = []
-        dealCards();
+        this.tableaus = [];
+        this.freeCells = [];
+        this.foundations = [];
+        this.generateCardComponents(numberOfTableaus, numberOfFreeCells);
     }
 
-    dealCards(numberOfTableaus = 8, numberOfFreeCells = 4, numberOfFoundations = 4)
+    geneateFoundations()
     {
-        for (let i = 0; i<numberOfFoundations; i++)
+        for(let i = 0; i < 4; i++)
         {
-            this.foundations.push(new Tableau());
+            this.foundations.push("")
         }
+    }
+
+    generateFreeCells(numberOfFreeCells)
+    {
+        for(let i = 0; i< numberOfFreeCells; i++)
+        {
+            this.freeCells.push([]);
+        }
+    }
+
+    fillTableaus(numberOfTableaus)
+    {
+        //Generating Tableaus
+        for (let i = 0; i<numberOfTableaus; i++)
+        {
+            this.tableaus.push(new Tableau());
+        }
+        
+        //Filling Tableaus with cards
+        while (this.deck.isEmpty() != true)
+        {
+            for(let tableau of this.tableaus)
+            {
+                tableau.cards.push(this.deck.drawCard())
+            }
+        }
+    }
+    
+    generateCardComponents()
+    {
+
     }
 
     updateDisplay()
@@ -33,3 +64,5 @@ class FreeCellGame
         
     }
 }
+
+mainGameInstance = FreeCellGame(8,4)
