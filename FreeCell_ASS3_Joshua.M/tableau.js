@@ -10,4 +10,9 @@ class Tableau
     {
         return this.cards[this.cards.length - 1];
     }
+
+    addCard(card)
+    {
+        this.cards.push(card);
+    }
 }
