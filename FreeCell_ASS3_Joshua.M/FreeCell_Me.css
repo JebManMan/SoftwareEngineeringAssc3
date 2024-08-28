@@ -2,6 +2,7 @@
 #canvas
 {
  margin: auto;
+ display:inline-block;
  text-align: center;
  border: solid rgb(100,200,300) 8px;
  background-color: rgb(163, 212, 163);

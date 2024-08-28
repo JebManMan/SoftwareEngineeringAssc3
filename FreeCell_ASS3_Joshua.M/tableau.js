@@ -8,7 +8,7 @@ class Tableau
 
     getTopCard()
     {
-        return this.cards[this.cards.length - 1];
+        return (this.cards[this.cards.length - 1]);
     }
 
     addCard(card)

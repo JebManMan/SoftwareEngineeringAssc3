@@ -20,6 +20,11 @@ class FreeCellGame
         this.freeCells = [];
         this.foundations = [];
         this.generateCardComponents(numberOfTableaus, numberOfFreeCells);
+        
+
+        //Begin the game
+        //window.setInterval(this.mainGameLoop, 100);
+        this.mainGameLoop()
     }
 
     geneateFoundations()
@@ -48,18 +53,20 @@ class FreeCellGame
         }
         
         //Filling Tableaus with cards
-        while (true)
+        
+        for(let i = 0; i < 52; i++)
         {
             for(let tableau of this.tableaus)
             {
-                if (this.deck.isEmpty())
+                let drawnCard = this.deck.drawCard();
+                if (drawnCard != null)
                 {
-                    break;
-                }
-                tableau.addCard(this.deck.drawCard())
-                console.log(tableau.cards);
+                    tableau.addCard(drawnCard);
+                }   
             }
         }
+        console.log(this.tableaus);
+        
     }
     
     generateCardComponents(numberOfTableaus, numberOfFreeCells)
@@ -70,26 +77,35 @@ class FreeCellGame
 
     updateDisplay()
     {
-        generatePositions();
-        let renderableObjects = [];
-        renderObjects(renderableObjects);
+        this.generatePositions();
+        let renderableObjects = [this.tableaus[0].getTopCard()];
+        console.log(renderableObjects)
+        this.renderObjects(renderableObjects);
     }
 
     generatePositions()
     {
-        
+        let x = 0;
     }
 
     renderObjects(renderableObjects)
     {
-        for(let object in renderableObjects)
+        for(let card of renderableObjects)
         {
-            this.ctx.drawImg(object.getImageRef().img,object.x, object.y);
+            console.log(card);
+            card.x = 100;
+            card.y = 200;
+            let cardElement = new Image(); //document.createElement("img");
+            cardElement.src = card.getImageRef();
+
+            this.ctx.drawImage(cardElement,card.x, card.y);
         }
     }
 
     mainGameLoop()
     {
+        this.updateDisplay();
+    
         //update display 
         //generate hitBoxes
         //collect input
