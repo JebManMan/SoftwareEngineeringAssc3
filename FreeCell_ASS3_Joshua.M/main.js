@@ -21,16 +21,6 @@ class FreeCellGame
         //this.mainGameLoop();
     }
 
-    updateCanvasSizeStart()
-    {
-        window.onload = window.onresize = function()   
-        {
-        this.generatePositions(0.4);
-        this.canvas.width = window.innerWidth * 0.75;
-        this.canvas.height = window.innerHeight * 0.8;
-        }
-    }
-
     geneateFoundations()
     {
         let suits = ["H", "S", "C", "D"];
@@ -81,24 +71,29 @@ class FreeCellGame
 
     updateDisplay()
     {
-        this.generatePositions();
-        let renderableObjects = [this.tableaus[0].getTopCard()];
-        console.log(renderableObjects)
+        this.generatePositions(0.25);
+        var renderableObjects = [];
+        for (let tableau of this.tableaus)
+        {
+            for (let card of tableau.cards)
+            {
+                renderableObjects.push(card);
+            }
+        }
+        console.log("renderable objects: " + renderableObjects)
         this.renderObjects(renderableObjects);
     }
 
     generatePositions(tableauHeight)
     {   
-
         //Creating positions for tableaus and cards within
         for(let i = 0; i < this.tableaus.length; i++)
         {
             //Values deciding offset 
-            let tableauOffset =  0.05 * this.canvas.width;
+            let tableauOffset =  0.075 * this.canvas.width;
             let emptySpace = 0.1 * this.canvas.width;
 
-            //
-            this.tableaus[i].x = tableauOffset + (this.canvas.width - emptySpace / this.tableaus.length) * i;
+            this.tableaus[i].x = tableauOffset + ((this.canvas.width - emptySpace) / this.tableaus.length) * i;
             this.tableaus[i].y = this.canvas.height * tableauHeight;
             
             for (let j = 0; j < this.tableaus[i].cards.length; j++)
@@ -108,12 +103,11 @@ class FreeCellGame
                 card.width = this.canvas.width * 0.05;
                 card.height = card.width * 1.4;
                 
-                card.y = this.tableaus[i].y + card.height * 0.4;
+                card.y = this.tableaus[i].y + (j * (card.height * 0.4));
                 
                 this.tableaus[i].cards[j] = card;
 
             }
-            console.log(this.tableaus)
         }
     }
 
@@ -122,16 +116,21 @@ class FreeCellGame
         for(let card of renderableObjects)
         {
             console.log(card);
-            card.x = 20;
-            card.y = 20;
+            //card.x = 20;
+            //card.y = 20;
             //var cardElement = new Image(); 
             var cardElement = document.createElement("img");
             cardElement.src = "cards/" + card.getImageRef();
-
-            this.ctx.beginPath();
-            this.ctx.rect(20, 20, 150, 100);
-            this.ctx.stroke();
             this.ctx.drawImage(cardElement,card.x, card.y, card.width, card.height);
+        }
+    }
+
+    updateCanvasSizeStart()
+    {
+        window.onload = window.onresize = function()   
+        {
+        this.canvas.width = window.innerWidth * 0.75;
+        this.canvas.height = window.innerHeight * 0.8;
         }
     }
 
