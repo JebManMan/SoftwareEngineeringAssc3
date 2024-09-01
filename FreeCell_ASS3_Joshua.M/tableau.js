@@ -4,6 +4,8 @@ class Tableau
     {
         //Top most card will the largest index card in the array
         this.cards = []
+        this.y = 0;
+        this.x = 0;
     }
 
     getTopCard()
