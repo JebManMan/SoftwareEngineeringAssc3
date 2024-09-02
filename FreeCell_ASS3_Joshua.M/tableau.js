@@ -8,6 +8,15 @@ class Tableau
         this.x = 0;
     }
 
+    isEmpty()
+    {
+        if (this.cards.length == 0)
+        {
+            return false;
+        }
+        return true;
+    }
+
     getTopCard()
     {
         return (this.cards[this.cards.length - 1]);

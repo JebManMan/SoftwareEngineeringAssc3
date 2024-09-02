@@ -76,21 +76,28 @@ class FreeCellGame
         var renderableObjects = this.getRenderableCards();
 
         //console.log("renderable objects: " + renderableObjects)
-        this.renderObjects(renderableObjects);
+        this.renderCards(renderableObjects);
+        this.renderBoundryFreeCellAndFoundations()
     }
     
     getRenderableCards()
     {
         //Adding card objects to renderableObjects
-        let renderableObjects = []
+        let renderableObjects = [];
         for (let freeCell of this.freeCells)
             {
-                renderableObjects.push(freeCell.card);
+                if (freeCell.isEmpty() == false)
+                {
+                    renderableObjects.push(freeCell.card);
+                }
             }
     
             for (let foundation of this.foundations)
             {
-                renderableObjects.push(foundation.getTopCard());
+                if (foundation.isEmpty() == false)
+                {
+                    renderableObjects.push(foundation.getTopCard());
+                }
             }
     
             for (let tableau of this.tableaus)
@@ -102,6 +109,8 @@ class FreeCellGame
             }
         return renderableObjects;
     }
+
+
     generatePositions(tableauHeight, freeCellAndFoundationHeight)
     {   
         //Creating positions for free cells and foundations
@@ -109,27 +118,21 @@ class FreeCellGame
         //Determines the distance from the sides of the sides of the canvas 
         var freeCellAndFoundationOffset = 0.05;
 
+        //Determining free Cell position and inheriting it to any cards within 
         for (let i = 0; i < this.freeCells.length; i++)
         {
             this.freeCells[i].x = screenHalf + freeCellAndFoundationOffset + (screenHalf - freeCellAndFoundationOffset / this.freeCells.length) * i
             this.freeCells[i].y = this.canvas.height * freeCellAndFoundationHeight;
-            this.freeCells[i].width = this.canvas.width * 0.05;
-            this.freeCells[i].height = card.width * 1.4;
+            this.freeCells[i].cardInheritPosition();
         }
 
         for (let i = 0; i < this.foundations.length; i++)
         {
-            /*
-            card = this.foundations[i].getTopCard();
-            card.x = freeCellAndFoundationOffset + (screenHalf - freeCellAndFoundationOffset / this.freeCells.length) * i
-            card.y = this.canvas.height * freeCellAndFoundationHeight;
-            card.width = this.canvas.width * 0.05;
-            card.height = card.width * 1.4;
-            this.foundations[i].cards[this.foundations.length-1] = card;
-            */
+            this.foundations[i].x = freeCellAndFoundationOffset + (screenHalf - freeCellAndFoundationOffset / this.freeCells.length) * i
+            this.foundations[i].y = this.canvas.height * freeCellAndFoundationHeight;
+            this.foundations[i].topCardInheritPosition();
         }
         
-
 
         //Creating positions for tableaus and cards within
         for(let i = 0; i < this.tableaus.length; i++)
@@ -144,9 +147,6 @@ class FreeCellGame
             {
                 let card = this.tableaus[i].cards[j];
                 card.x = this.tableaus[i].x;
-                card.width = this.canvas.width * 0.05;
-                card.height = card.width * 1.4;
-                
                 card.y = this.tableaus[i].y + (j * (card.height * 0.4));
                 
                 this.tableaus[i].cards[j] = card;
@@ -154,17 +154,38 @@ class FreeCellGame
         }
     }
 
-    renderObjects(renderableObjects)
+    renderCards(renderableObjects)
     {
         for(let card of renderableObjects)
         {
-            console.log(card);
-            //card.x = 20;
-            //card.y = 20;
+            //console.log(card);
+            //Determening card width and height
+            card.width = this.canvas.width * 0.05;
+            card.height = card.width * 1.4;
+
             //var cardElement = new Image(); 
             var cardElement = document.createElement("img");
             cardElement.src = "cards/" + card.getImageRef();
             this.ctx.drawImage(cardElement,card.x, card.y, card.width, card.height);
+        }
+    }
+
+    renderBoundryFreeCellAndFoundations()
+    {
+        for(let freeCell of this.freeCells)
+        {
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = "red";
+            this.ctx.rect(freeCell.x, freeCell.y, 5,5)
+            this.ctx.stroke();
+        }
+
+        for(let foundation of this.freeCells)
+        {
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = "green";
+            this.ctx.rect(foundation.x, foundation.y, 5,5)
+            this.ctx.stroke();
         }
     }
 
