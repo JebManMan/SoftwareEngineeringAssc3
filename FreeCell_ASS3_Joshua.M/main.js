@@ -14,11 +14,13 @@ class FreeCellGame
 
         this.updateCanvasSizeStart();
 
-        requestAnimationFrame(this.mainGameLoop.bind(this));
+        console.log(this.tableaus[0].cards[0]);
 
-        //Begin the game
-        //window.setInterval(this.mainGameLoop, 100);
-        //this.mainGameLoop();
+        //this.foundations[0].cards.push(newFoundationCopy);
+        //this.freeCells[0].card = newFoundationCopy;
+
+        //Begin the game via run the main game loop
+        requestAnimationFrame(this.mainGameLoop.bind(this));
     }
 
     geneateFoundations()
@@ -67,6 +69,7 @@ class FreeCellGame
     {
         this.fillTableaus(numberOfTableaus);
         this.generateFreeCells(numberOfFreeCells);
+        this.geneateFoundations();
     }
 
     updateDisplay()
@@ -76,7 +79,10 @@ class FreeCellGame
         var renderableObjects = this.getRenderableCards();
 
         //console.log("renderable objects: " + renderableObjects)
-        this.renderCards(renderableObjects);
+        for (let card of renderableObjects)
+        {
+            this.renderCard(card);
+        }
         this.renderBoundryFreeCellAndFoundations()
     }
     
@@ -88,6 +94,9 @@ class FreeCellGame
             {
                 if (freeCell.isEmpty() == false)
                 {
+                    //freeCell.card.x = freeCell.x;
+                    //freeCell.card.y = freeCell.y;
+
                     renderableObjects.push(freeCell.card);
                 }
             }
@@ -114,21 +123,22 @@ class FreeCellGame
     generatePositions(tableauHeight, freeCellAndFoundationHeight)
     {   
         //Creating positions for free cells and foundations
-        var screenHalf = this.canvas.width/2;
+        var screenHalf = this.canvas.width / 2;
         //Determines the distance from the sides of the sides of the canvas 
-        var freeCellAndFoundationOffset = 0.05;
+        var freeCellAndFoundationOffset = 0.05 * this.canvas.width;
 
         //Determining free Cell position and inheriting it to any cards within 
         for (let i = 0; i < this.freeCells.length; i++)
         {
-            this.freeCells[i].x = screenHalf + freeCellAndFoundationOffset + (screenHalf - freeCellAndFoundationOffset / this.freeCells.length) * i
+            this.freeCells[i].x = screenHalf + freeCellAndFoundationOffset + (((screenHalf - freeCellAndFoundationOffset) / this.freeCells.length) * i);
             this.freeCells[i].y = this.canvas.height * freeCellAndFoundationHeight;
             this.freeCells[i].cardInheritPosition();
+            console.log("The Post Inherited" + this.freeCells[i].card);
         }
 
         for (let i = 0; i < this.foundations.length; i++)
         {
-            this.foundations[i].x = freeCellAndFoundationOffset + (screenHalf - freeCellAndFoundationOffset / this.freeCells.length) * i
+            this.foundations[i].x = freeCellAndFoundationOffset + (((screenHalf - freeCellAndFoundationOffset) / this.foundations.length) * i)
             this.foundations[i].y = this.canvas.height * freeCellAndFoundationHeight;
             this.foundations[i].topCardInheritPosition();
         }
@@ -154,39 +164,91 @@ class FreeCellGame
         }
     }
 
-    renderCards(renderableObjects)
+    renderCardsMakeHitboxes(renderableObjects)
     {
+        /*
+        var hitBoxes = [];
         for(let card of renderableObjects)
         {
-            //console.log(card);
-            //Determening card width and height
-            card.width = this.canvas.width * 0.05;
-            card.height = card.width * 1.4;
-
-            //var cardElement = new Image(); 
-            var cardElement = document.createElement("img");
-            cardElement.src = "cards/" + card.getImageRef();
-            this.ctx.drawImage(cardElement,card.x, card.y, card.width, card.height);
+            this.renderCard(card);
+            hitBoxes.append(this.getCardHitbox(card));
         }
+        */
+    }
+
+    getCardHitbox(card)
+    {
+       // var hitBox.x 
+    }
+
+    renderCard(card)
+    {
+        card.width = this.canvas.width * 0.05;
+        card.height = card.width * 1.4;
+
+        //var cardElement = new Image(); 
+        var cardElement = document.createElement("img");
+        cardElement.src = "cards/" + card.getImageRef();
+        this.ctx.drawImage(cardElement,card.x, card.y, card.width, card.height);
     }
 
     renderBoundryFreeCellAndFoundations()
     {
+        console.log(this.freeCells)
+        console.log(this.foundations)
+        var boundryWidth = 0.05 * this.canvas.width;
+        var boundryHeight = boundryWidth * 1.4;
         for(let freeCell of this.freeCells)
         {
             this.ctx.beginPath();
-            this.ctx.strokeStyle = "red";
-            this.ctx.rect(freeCell.x, freeCell.y, 5,5)
+            this.ctx.strokeStyle = "blue";
+            this.ctx.rect(freeCell.x, freeCell.y, boundryWidth,boundryHeight);
             this.ctx.stroke();
         }
 
-        for(let foundation of this.freeCells)
+        for(let foundation of this.foundations)
         {
             this.ctx.beginPath();
-            this.ctx.strokeStyle = "green";
-            this.ctx.rect(foundation.x, foundation.y, 5,5)
+            this.ctx.strokeStyle = "red";
+            this.ctx.rect(foundation.x, foundation.y, boundryWidth,boundryHeight);
             this.ctx.stroke();
         }
+    }
+
+    generateHitBoxes()
+    {
+
+    }
+
+
+    moveCard(cardID1, endID)
+    {
+        //card 1 
+        //card 2 
+        /*
+        card
+        var isTableau = false;
+        var isFoundation = false;
+        var isFreeCell = false;
+
+        if (cardID1[0] = "T")
+        {
+            isTableau = true;
+        }
+
+        if (cardID1[0] = "FR")
+        {
+            isFreeCell = true;
+        }
+
+        if (cardID1[0] = "FO")
+        {
+            isFoundation = true;
+        }
+        
+        
+        
+        */
     }
 
     updateCanvasSizeStart()

@@ -10,21 +10,22 @@ class Foundation
 
     topCardInheritPosition()
     {
-        if (this.cards != [])
+        if (this.cards.length != 0)
         {
-            this.cards[this.cards.length].x = this.x;
-            this.cards[this.cards.length].y = this.y;
+            this.cards[this.cards.length - 1].x = this.x;
+            this.cards[this.cards.length - 1].y = this.y;
         }
     }
 
 
     isEmpty()
     {
+        var isEmpty = false
         if (this.cards.length == 0)
         {
-            return false;
+            isEmpty = true
         }
-        return true;
+        return isEmpty;
     }
 
     getSuit()
