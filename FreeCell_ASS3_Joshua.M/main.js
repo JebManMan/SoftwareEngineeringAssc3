@@ -14,6 +14,8 @@ class FreeCellGame
 
         this.updateCanvasSizeStart();
 
+        this.cardsInstance = [];
+
         console.log(this.tableaus[0].cards[0]);
 
         //this.foundations[0].cards.push(newFoundationCopy);
@@ -72,21 +74,23 @@ class FreeCellGame
         this.geneateFoundations();
     }
 
+
+    updateTableausFoundationsFreeCells()
+    {
+        this.generatePositions(0.25, 0.05)
+    }
+
     updateDisplay()
     {
-        this.generatePositions(0.25, 0.05);
-        
-        var renderableObjects = this.getRenderableCards();
-
         //console.log("renderable objects: " + renderableObjects)
-        for (let card of renderableObjects)
+        for (let card of this.cardsInstance)
         {
             this.renderCard(card);
         }
         this.renderBoundryFreeCellAndFoundations()
     }
     
-    getRenderableCards()
+    getMainArrayCards()
     {
         //Adding card objects to renderableObjects
         let renderableObjects = [];
@@ -134,13 +138,28 @@ class FreeCellGame
             this.freeCells[i].y = this.canvas.height * freeCellAndFoundationHeight;
             this.freeCells[i].cardInheritPosition();
             console.log("The Post Inherited" + this.freeCells[i].card);
+            if (this.freeCells[i].card != null)
+            {
+                this.freeCells[i].card.freeCellNumber = i;
+                this.freeCells[i].card.isInFreeCell = true;
+            }
         }
 
+        //Giving the 
         for (let i = 0; i < this.foundations.length; i++)
         {
             this.foundations[i].x = freeCellAndFoundationOffset + (((screenHalf - freeCellAndFoundationOffset) / this.foundations.length) * i)
             this.foundations[i].y = this.canvas.height * freeCellAndFoundationHeight;
             this.foundations[i].topCardInheritPosition();
+            if (this.foundations[i].cards.length > 0)
+            {
+                for (let j = 0; j < this.foundations.length; j++)
+                {
+                    this.foundations[i].cards[j].foundationNumber = i;
+                    this.foundations[i].cards[j].foundationInternalPosition = j;
+                    this.foundations[i].cards[j].isInFoundation = true;
+                }
+            }
         }
         
 
@@ -156,6 +175,9 @@ class FreeCellGame
             for (let j = 0; j < this.tableaus[i].cards.length; j++)
             {
                 let card = this.tableaus[i].cards[j];
+                card.isInTableau = true;
+                card.tableauNumber = i;
+                card.tableauInternalPosition = j;
                 card.x = this.tableaus[i].x;
                 card.y = this.tableaus[i].y + (j * (card.height * 0.4));
                 
@@ -179,6 +201,28 @@ class FreeCellGame
     getCardHitbox(card)
     {
        // var hitBox.x 
+    }
+
+
+    pushCardInstanceChanges()
+    {
+        for (let card of this.cardsInstance)
+        {
+            if (card.isInFoundation)
+            {
+                this.foundations[card.foundationNumber] = card 
+            }
+
+            else if (card.isInTableau)
+            {
+                this.tableaus[card.tableauNumber].cards[card.tableauInternalPosition]
+            }
+
+            else if (card.isInFreeCell)
+            {
+                this.freeCells[card.freeCellNumber] = card
+            }
+        }
     }
 
     renderCard(card)
@@ -262,7 +306,20 @@ class FreeCellGame
 
     mainGameLoop()
     {
+        this.updateTableausFoundationsFreeCells();
+
+        this.cardsInstance = this.getMainArrayCards();
+
         this.updateDisplay();
+
+
+        this.pushCardInstanceChanges();
+
+
+        
+        
+        
+        
         setTimeout(() => {
             requestAnimationFrame(this.mainGameLoop.bind(this));
         }, 100 );

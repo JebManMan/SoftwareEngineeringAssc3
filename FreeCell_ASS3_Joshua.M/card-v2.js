@@ -11,6 +11,9 @@ class Card {
 		this.#rank = rank;
 		this.#faceUp = vis;
 		this.#setColor(); 
+		this.isInTableau = false;
+		this.isInFoundation = false;
+		this.isInFreeCell = false;
 		
 		switch(this.#rank) {
 			case 'J':
