@@ -37,4 +37,21 @@ class Foundation
     {
         return this.cards[this.cards.length - 1];
     }
+
+    getHighestValue()
+    {
+        var highestValue = 0;
+        for(let card of this.cards)
+        {
+            if(card.isPlaceholder == false)
+            {
+                if(card.getValue() > highestValue)
+                {
+                    highestValue = card.getValue();
+                }
+            }
+        }
+        console.log(highestValue);
+        return highestValue;
+    }
 }

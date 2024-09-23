@@ -5,7 +5,7 @@ class Card {
 	#faceUp
 	#color
 	
-	constructor(suit, rank, vis=false) {
+	constructor(suit, rank, vis=false, isPlaceholder = false) {
 		/*Create an object of class Card; provide suit, rank, [visible]*/
 		this.#suit = suit;
 		this.#rank = rank;
@@ -17,6 +17,8 @@ class Card {
 		this.isSelected = false;
 		this.cardIndex = null;
 		this.tableauNumber = null;
+		this.foundationNumber = null;
+		this.isPlaceholder = isPlaceholder;
 		
 		switch(this.#rank) {
 			case 'J':
@@ -29,7 +31,7 @@ class Card {
 				this.#value = 13;
 				break;
 			case 'A':
-				this.#value = 14;
+				this.#value = 1;
 				break;
 			default:
 				this.#value = parseInt(this.#rank);
