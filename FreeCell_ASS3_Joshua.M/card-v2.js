@@ -14,6 +14,9 @@ class Card {
 		this.isInTableau = false;
 		this.isInFoundation = false;
 		this.isInFreeCell = false;
+		this.isSelected = false;
+		this.cardIndex = null;
+		this.tableauNumber = null;
 		
 		switch(this.#rank) {
 			case 'J':
@@ -74,5 +77,12 @@ class Card {
 	getImageRef() {
 		/*Returns a string containing a local filename for the card*/
 		return `${this.#rank + this.#suit}.png`;
+	}
+
+	clearCardPosition()
+	{
+		this.isInFoundation = false;
+		this.isInTableau = false;
+		this.isInFreeCell = false;
 	}
 }
