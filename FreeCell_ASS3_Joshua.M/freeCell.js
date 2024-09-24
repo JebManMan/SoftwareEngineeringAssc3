@@ -3,25 +3,42 @@ class FreeCell
     constructor()
     {
         this.card = null;
+        this.cards = [];
         this.y = 0;
         this.x = 0;
     }
 
-    isEmpty()
+    pushToCards(card)
     {
-        if (this.card == null)
-        {
-            return (true);
-        }
-        return (false);
+        this.cards.push(card);
     }
 
-    cardInheritPosition()
+    freeToMoveCardIn()
     {
-        if (this.card != null)
+        var freeToMoveCardIn = true;
+        if (this.cards.length >= 2)
         {
-            this.card.x = this.x;
-            this.card.y = this.y;
+            freeToMoveCardIn = false;
+        }
+        return freeToMoveCardIn;
+    }
+
+    isEmpty()
+    {
+        var isEmpty = false;
+        if (this.cards.length == 0)
+        {
+            isEmpty = true;
+        }
+        return isEmpty;
+    }
+
+    cardsInheritPosition()
+    {
+        for (let card of this.cards)
+        {
+            card.x = this.x;
+            card.y = this.y;
         }
     }
 }

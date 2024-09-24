@@ -4,6 +4,8 @@ class FreeCellGame
 {
     constructor(canvasInput, numberOfTableaus = 8, numberOfFreeCells = 4)
     {
+        this.gameRunning = true;
+
         this.deck = new Deck();
         this.canvas = canvasInput;
         this.ctx = this.canvas.getContext("2d");
@@ -22,9 +24,7 @@ class FreeCellGame
         //Should be multiplied by card height
         this.tableauCardDepthOffset = 0.4;
 
-
-        //this.foundations[0].cards.push(newFoundationCopy);
-        //this.freeCells[0].card = newFoundationCopy;
+        this.maxMoveingCardsAtOnce = 4;
 
         //Begin the game via run the main game loop
         
@@ -50,15 +50,25 @@ class FreeCellGame
         {
             foundation.cards.push(new Card("D","K",false,true));
         }
-        console.log(this.foundations)
+        //console.log(this.foundations)
     }
 
     generateFreeCells(numberOfFreeCells)
     {
+        console.log(this.freeCells);
         for(let i = 0; i< numberOfFreeCells; i++)
         {
             this.freeCells.push(new FreeCell());
         }
+
+        //AddingPlaceholderInteractables 
+        for(let i = 0; i< this.freeCells.length; i++)
+        {
+            console.log("DOES");
+            this.freeCells[i].cards.push(new Card("D","K",false,true));
+        }
+        console.log("FIRST PRING");
+        console.log(this.freeCells);
     }
 
     fillTableaus(numberOfTableaus)
@@ -69,9 +79,9 @@ class FreeCellGame
             this.tableaus.push(new Tableau());
         }
 
+        //AddingPlaceholderCards
         for (let tableau of this.tableaus)
         {
-
             tableau.cards.push(new Card("H","K",false,true));
         }
         
@@ -95,14 +105,14 @@ class FreeCellGame
     generateCardComponents(numberOfTableaus, numberOfFreeCells)
     {
         this.fillTableaus(numberOfTableaus);
-        this.generateFreeCells(numberOfFreeCells);
         this.geneateFoundations();
+        this.generateFreeCells(numberOfFreeCells);
     }
 
 
     updateTableausFoundationsFreeCells()
     {
-        this.generatePositions(0.25, 0.05)
+        this.generatePositions(0.25, 0.05);
     }
 
     updateDisplay()
@@ -123,10 +133,10 @@ class FreeCellGame
             {
                 if (freeCell.isEmpty() == false)
                 {
-                    //freeCell.card.x = freeCell.x;
-                    //freeCell.card.y = freeCell.y;
-
-                    mainArray.push(freeCell.card);
+                    for (let card of freeCell.cards)
+                    {
+                        mainArray.push(card);
+                    }
                 }
             }
     
@@ -164,12 +174,13 @@ class FreeCellGame
         {
             this.freeCells[i].x = screenHalf + freeCellAndFoundationOffset + (((screenHalf - freeCellAndFoundationOffset) / this.freeCells.length) * i);
             this.freeCells[i].y = this.canvas.height * freeCellAndFoundationHeight;
-            this.freeCells[i].cardInheritPosition();
+            this.freeCells[i].cardsInheritPosition();
             //console.log("The Post Inherited" + this.freeCells[i].card);
-            if (this.freeCells[i].card != null)
+            for (let j = 0; j < this.freeCells[i].cards.length; j++)
             {
-                this.freeCells[i].card.freeCellNumber = i;
-                this.freeCells[i].card.isInFreeCell = true;
+                this.freeCells[i].cards[j].isInFreeCell = true;
+                this.freeCells[i].cards[j].freeCellNumber = i;
+                this.freeCells[i].cards[j].freeCellInternalPosition = j;
             }
         }
 
@@ -219,13 +230,6 @@ class FreeCellGame
         for(let tableau of this.tableaus)
         {
             tableau.cards = [];
-            /*
-            for(let card of tableau.cards)
-            {
-                //console.log("card be null");
-                card = null;
-            }
-            */
         }
 
         for(let foundation of this.foundations)
@@ -236,11 +240,13 @@ class FreeCellGame
         for(let freeCell of this.freeCells)
         {
             freeCell.card = null;
+            freeCell.cards = [];
         }
     }
 
     pushCardInstanceChanges()
     {
+        //console.log(this.freeCells)
         this.clearCardsWithinTableausFreeCellsFoundationsArrays();
         //console.log(this.tableaus);
         //console.log(this.cardsInstance);
@@ -259,7 +265,7 @@ class FreeCellGame
 
             else if (card.isInFreeCell)
             {
-                this.freeCells[card.freeCellNumber] = card;
+                this.freeCells[card.freeCellNumber].cards[card.freeCellInternalPosition] = card;
             }
         }
         //console.log(this.tableaus);
@@ -386,7 +392,7 @@ class FreeCellGame
 
                 else{
                     this.moveCard(this.getSelectedCard(), card);
-                    console.log(this.getSelectedCard());
+                    //console.log(this.getSelectedCard());
                     this.deSelectOtherCards();
                 }
             }
@@ -442,8 +448,22 @@ class FreeCellGame
         return(viableMove);
     }
 
+    tableauRuleCheck(inputCard,goalCard)
+    {   
+        var viableMove = true;
+        if (inputCard.getColor() == goalCard.getColor())
+        {
+            viableMove = false;
+        }
+        else if (inputCard.getValue() != goalCard.getValue() - 1)
+        {
+            viableMove = false;
+        }
+        return(viableMove);
+    }
+
     moveCard(movingCard, goalCard)
-    {
+    {   
         if (movingCard.isInTableau != true || goalCard.isInFoundation || goalCard.isInFreeCell)
         {
             this.singleCardMove(movingCard,goalCard);
@@ -483,7 +503,7 @@ class FreeCellGame
 
     //Negative Values to move to view values above card
     getCardDistanceBelow(inputCard, shiftsDown)
-    {
+    {   
         for (let card of this.cardsInstance)
         {
             if (card.tableauNumber == inputCard.tableauNumber && card.tableauInternalPosition == (inputCard.tableauInternalPosition + shiftsDown))
@@ -495,30 +515,53 @@ class FreeCellGame
 
     multipleCardMovement(movingCard, goalCard)
     {
-        var numberOfMoves = ((this.tableaus[movingCard.tableauNumber].cards.length - 1) - movingCard.tableauInternalPosition);
-        var distanceBelow = 0;
-        for (let i = numberOfMoves; i >= 0; i--)
+        var numberOfMoves = ((this.tableaus[movingCard.tableauNumber].cards.length) - movingCard.tableauInternalPosition);
+        var movingCardInstance = movingCard;
+        var goalCardInstance = goalCard;
+        //console.log('numberOfMoves');
+        //console.log(this.getCardDistanceBelow(movingCard,0))
+        //console.log(numberOfMoves);
+        for (let i = 0; i <= numberOfMoves -1; i++)
         {
-            console.log(this.getCardDistanceBelow(movingCard,i));
-            this.singleCardMove(this.getCardDistanceBelow(movingCard,i), this.getCardDistanceBelow(goalCard, distanceBelow));
-            distanceBelow = distanceBelow + 1;
+            console.log(i);
+            //console.log(movingCard);
+            //console.log(this.cardsInstance);
+            //console.log(movingCardInstance);
+            console.log(this.getCardDistanceBelow(movingCardInstance,i));
+
+            this.singleCardMove(this.getCardDistanceBelow(movingCardInstance,i), goalCardInstance);
+            console.log(goalCardInstance);
+            goalCardInstance = this.getCardDistanceBelow(movingCardInstance,i);
+            //console.log("succesfulMove");
         }
     }
+
+    freeCellRuleCheck(movingCard, goalCard)
+    {
+        var moveLegal = true;
+            if (this.freeCells[goalCard.freeCellNumber].freeToMoveCardIn() = false)
+            {
+                moveLegal = false;
+            }
+        return (moveLegal);
+    }
+
 
     singleCardMove(movingCard,goalCard)
     {
         if (goalCard.isInFoundation && this.foundationRuleCheck(movingCard,goalCard))
             {
-
+                movingCard.clearCardPosition();
                 movingCard.isInFoundation = true;
                 movingCard.foundationNumber = goalCard.foundationNumber;
                 movingCard.foundationInternalPosition = goalCard.foundationInternalPosition + 1;
             }
     
-            else if (goalCard.isInFreeCell)
+            else if (goalCard.isInFreeCell && this.freeCellRuleCheck(movingCard,goalCard))
             {
                 movingCard.isInFreeCell = true;
                 movingCard.freeCellNumber = goalCard.freeCellNumber;
+                movingCard.freeCellInternalPosition = goalCard.freeCellInternalPosition;
             }
             
             else if (goalCard.isInTableau)
@@ -571,9 +614,29 @@ class FreeCellGame
 
     }
 
+    updateNumberOfMaxMoves()
+    {
+        var maxMovingCards = 1;
+        for (let freeCell of this.freeCells)
+        {
+            if (freeCell.freeToMoveCardIn())
+            {
+                maxMovingCards = maxMovingCards + 1;
+            }
+        }
+        this.maxMoveingCardsAtOnce = maxMovingCards;
+    }
+
+    stopGame()
+    {
+        this.gameRunning = false;
+    }
+
     mainGameLoop()
     {
         this.updateTableausFoundationsFreeCells();
+
+        this.updateNumberOfMaxMoves();
 
         this.clearCanvas();
         this.updateDisplay();
@@ -608,6 +671,8 @@ class FreeCellGame
         //After two clicks atempt to perform movement
     }
 }
+
+
 mainGameInstance = new FreeCellGame(canvas, 8,4);
 
 
