@@ -471,7 +471,7 @@ class FreeCellGame
         
         else if (this.tableaus[movingCard.tableauNumber].cards.length - 1 != movingCard.tableauInternalPosition)
         {
-            this.multipleCardMovement(movingCard,goalCard);
+            this.multipleCardMovementAtempt2(movingCard,goalCard);
         }
         else{
             this.singleCardMove(movingCard,goalCard);
@@ -535,14 +535,34 @@ class FreeCellGame
             //console.log("succesfulMove");
         }
     }
+    
+
+    multipleCardMovementAtempt2(movingCard,goalCard)
+    {
+        var numberOfMoves = ((this.tableaus[movingCard.tableauNumber].cards.length) - movingCard.tableauInternalPosition);
+        var movingCards = [];
+        for(let i = 0; i < numberOfMoves; i++)
+        {
+           movingCards.push(this.tableaus[movingCard.tableauNumber].cards[movingCard.tableauInternalPosition + i]);
+        }
+        console.log("MOVING CARDS");
+        console.log(movingCards);
+
+        for (let i = 0; i < movingCards.length; i++)
+        {
+            this.getInstanceArrayConnectedCardFromCard(movingCards[i]).tableauNumber = goalCard.tableauNumber;
+            this.getInstanceArrayConnectedCardFromCard(movingCards[i]).tableauInternalPosition = goalCard.tableauInternalPosition + i + 1;
+        }
+    }
 
     freeCellRuleCheck(movingCard, goalCard)
     {
         var moveLegal = true;
-            if (this.freeCells[goalCard.freeCellNumber].freeToMoveCardIn() = false)
+            if (this.freeCells[goalCard.freeCellNumber].freeToMoveCardIn() == false)
             {
                 moveLegal = false;
             }
+        console.log(moveLegal);
         return (moveLegal);
     }
 
@@ -559,17 +579,22 @@ class FreeCellGame
     
             else if (goalCard.isInFreeCell && this.freeCellRuleCheck(movingCard,goalCard))
             {
+                movingCard.clearCardPosition();
                 movingCard.isInFreeCell = true;
                 movingCard.freeCellNumber = goalCard.freeCellNumber;
-                movingCard.freeCellInternalPosition = goalCard.freeCellInternalPosition;
+                movingCard.freeCellInternalPosition = goalCard.freeCellInternalPosition + 1;
             }
             
             else if (goalCard.isInTableau)
             {
-                //this.cardsInstance[this.cardsInstance.length - 1].tableauNumber = 6;
-                movingCard.isInTableau = true;
-                movingCard.tableauNumber = goalCard.tableauNumber;
-                movingCard.tableauInternalPosition = goalCard.tableauInternalPosition + 1;
+                if (movingCard.tableauNumber != goalCard.tableauNumber)
+                {
+                    movingCard.clearCardPosition();
+                    //this.cardsInstance[this.cardsInstance.length - 1].tableauNumber = 6;
+                    movingCard.isInTableau = true;
+                    movingCard.tableauNumber = goalCard.tableauNumber;
+                    movingCard.tableauInternalPosition = goalCard.tableauInternalPosition + 1;
+                }
             }
     
             console.log("Moved Cards Run")
@@ -627,6 +652,34 @@ class FreeCellGame
         this.maxMoveingCardsAtOnce = maxMovingCards;
     }
 
+    winCheck()
+    {   
+        playerWins = false;
+        var cardsInFoundations = 0
+        for(let card of this.cardsInstance)
+        {
+            if (card.isPlaceholder == false)
+            {
+                if (card.isInFoundation)
+                {
+                    cardsInFoundations = cardsInFoundations + 1;
+                }
+            }
+        }
+        if (cardsInFoundations == 52)
+        {
+            playerWins = true;
+        }
+        return playerWins;
+    }
+
+    displayWin()
+    {
+        var winElement = document.createElement("img");
+        let winElementLink = "youWinIMAGE";
+        this.ctx.drawImage(winElementLink,this.canvas.width *0.25, this.canvas.height * 0.25, this.canvas.width *0.25, this.canvas.height * 0.25);
+    }
+
     stopGame()
     {
         this.gameRunning = false;
@@ -648,6 +701,8 @@ class FreeCellGame
         this.generateCardInstanceHitBoxes();
 
         this.selectClickedCard();
+
+        //this.displayWin()
 
         //this.shuffleCards(20);
         
