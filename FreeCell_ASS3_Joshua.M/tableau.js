@@ -26,4 +26,22 @@ class Tableau
     {
         this.cards.push(card);
     }
+
+    isEmptyExcludingPlaceholders()
+    {   
+        var empty = true;
+        var cardsWithoutPlaceholder = [];
+        for (let card of this.cards)
+        {
+            if (card.isPlaceholder == false)
+            {
+                cardsWithoutPlaceholder.push(card);
+            }
+        }
+        if (cardsWithoutPlaceholder.length > 0)
+        {
+            empty = false;
+        }
+        return empty;
+    }
 }

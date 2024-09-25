@@ -19,6 +19,7 @@ class Card {
 		this.tableauNumber = null;
 		this.foundationNumber = null;
 		this.isPlaceholder = isPlaceholder;
+		this.hitBox = [[0,0],[0,0]];
 		
 		switch(this.#rank) {
 			case 'J':
@@ -86,5 +87,6 @@ class Card {
 		this.isInFoundation = false;
 		this.isInTableau = false;
 		this.isInFreeCell = false;
+		this.tableauNumber = null;
 	}
 }

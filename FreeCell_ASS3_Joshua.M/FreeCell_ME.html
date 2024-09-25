@@ -5,6 +5,16 @@
     <link rel='stylesheet' type='text/css' media='screen' href='FreeCell_Me.css'>
 </head>
 <body>
+    <div id = "gameInputs">
+    <text id = 'tableauSliderText'>Number of Tableaus: 8</text>
+    <input type="range" min="5" max="10" value="8" class="slider" id="tableauSlider">
+    <text id = 'freeCellSliderText'>Number of FreeCells: 4</text>
+    <input type="range" min="4" max="8" value="4" class="slider" id="freeCellSlider">
+    <button id = "resetButton">RESET</button>
+    </div>
+    <div id = "instructionText">
+    <text>Foundations[H,S,C,D]-------------CLICK TO START-------------FRECELLS</text>
+    </div>
         <canvas id="canvas" width="400" height="300"> </canvas>
 </body>
 <script src="card-v2.js"></script>
@@ -12,5 +22,6 @@
 <script src="tableau.js"></script>
 <script src="foundation.js"></script>
 <script src="freeCell.js"></script>
+<script src="freeCellGame.js"></script>
 <script src='main.js'></script>
 </html>
