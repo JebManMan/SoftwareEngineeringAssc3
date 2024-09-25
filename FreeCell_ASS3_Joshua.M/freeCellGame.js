@@ -8,8 +8,6 @@ class FreeCellGame
 
     setUpGame(canvasInput,numberOfTableaus, numberOfFreeCells)
     {
-        this.gameRunning = true;
-
         this.deck = new Deck();
         this.canvas = canvasInput;
         this.ctx = this.canvas.getContext("2d");
@@ -18,28 +16,20 @@ class FreeCellGame
         this.foundations = [];
         this.generateCardComponents(numberOfTableaus, numberOfFreeCells);
 
-        //this.updateCanvasSizeStart();
-
         this.cardsInstance = [];
-
-        this.cardsInstanceCopys = [];
 
         this.playerClickX = null;
         this.playerClickY = null;
 
-        //Should be multiplied by card height
         this.tableauCardDepthOffset = 0.4;
 
         this.maxMoveingCardsAtOnce = 4;
 
         this.updateTableausFoundationsFreeCells();
 
-        //Begin the game via run the main game loop
-
         this.mainGameLoop();
 
         this.rulesEnabled = true;
-        //requestAnimationFrame(this.mainGameLoop.bind(this));
     }
 
     updateMouseClickPosition(x,y)
@@ -64,7 +54,6 @@ class FreeCellGame
 
     generateFreeCells(numberOfFreeCells)
     {
-        console.log(this.freeCells);
         for(let i = 0; i< numberOfFreeCells; i++)
         {
             this.freeCells.push(new FreeCell());
@@ -73,7 +62,6 @@ class FreeCellGame
         //AddingPlaceholderInteractables 
         for(let i = 0; i< this.freeCells.length; i++)
         {
-            console.log("DOES");
             this.freeCells[i].cards.push(new Card("D","K",false,true));
         }
         console.log("FIRST PRING");
@@ -95,7 +83,6 @@ class FreeCellGame
         }
         
         //Filling Tableaus with cards
-        
         for(let i = 0; i < 52; i++)
         {
             for(let tableau of this.tableaus)
@@ -106,9 +93,7 @@ class FreeCellGame
                     tableau.addCard(drawnCard);
                 }   
             }
-        }
-        console.log(this.tableaus);
-        
+        }        
     }
     
     generateCardComponents(numberOfTableaus, numberOfFreeCells)
@@ -118,7 +103,6 @@ class FreeCellGame
         this.generateFreeCells(numberOfFreeCells);
     }
 
-
     updateTableausFoundationsFreeCells()
     {
         this.generatePositions(0.25, 0.05);
@@ -126,7 +110,6 @@ class FreeCellGame
 
     updateDisplay()
     {
-        //console.log("renderable objects: " + renderableObjects)
         for (let card of this.cardsInstance)
         {
             this.renderCard(card);
@@ -137,17 +120,17 @@ class FreeCellGame
 
     renderPileTitles()
     {
-        //console.log("BEING RUN");
         let halfWidth = this.canvas.width / 2;
-        let textHeight = this.canvas.height * 0.01;
-        this.ctx.font = "50px Arial";
-        this.ctx.fillText("Free Cells", halfWidth + (halfWidth/3), textHeight);
-        this.ctx.fillText("Free Cells", halfWidth/3, textHeight);
+        let textHeight = this.canvas.height * 0.04;
+        this.ctx.font = "20px Arial";
+        this.ctx.fillStyle = 'gold';
+        this.ctx.fillText("FreeCells", halfWidth + (halfWidth/3), textHeight);
+        this.ctx.fillText("Foundations", halfWidth/3, textHeight);
     }
     
     getMainArrayCards()
     {
-        //Adding card objects to renderableObjects
+        //Extracts cards from several array card piles into one singular array
         let mainArray = [];
         for (let freeCell of this.freeCells)
             {
@@ -156,9 +139,8 @@ class FreeCellGame
                         mainArray.push(card);
                     }
             }
-            
-        
-            for (let foundation of this.foundations)
+
+        for (let foundation of this.foundations)
             {
                 if (foundation.isEmpty() == false)
                 {
@@ -247,6 +229,7 @@ class FreeCellGame
         }
     }
 
+//Emptys out the arrays within all card piles
     clearCardsWithinTableausFreeCellsFoundationsArrays()
     {
         for(let tableau of this.tableaus)
@@ -261,37 +244,29 @@ class FreeCellGame
 
         for(let freeCell of this.freeCells)
         {
-            freeCell.card = null;
             freeCell.cards = [];
         }
     }
 
-    //wipes the array forms of f
+    //wipes the array forms of card piles and fills them with the posible altered cards from the cardsInstance
     pushCardInstanceChanges()
     {
-        //console.log(this.freeCells)
         this.clearCardsWithinTableausFreeCellsFoundationsArrays();
-        //console.log(this.tableaus);
-        //console.log(this.cardsInstance);
         for (let card of this.cardsInstance)
         {
             if (card.isInFoundation)
             {
                 this.foundations[card.foundationNumber].cards[card.foundationInternalPosition] = card;
             }
-
             else if (card.isInTableau)
             {
-                //console.log("im gere")
                 this.tableaus[card.tableauNumber].cards[card.tableauInternalPosition] = card;
             }
-
             else if (card.isInFreeCell)
             {
                 this.freeCells[card.freeCellNumber].cards[card.freeCellInternalPosition] = card;
             }
         }
-        //console.log(this.tableaus);
     }
 
     renderCard(card)
@@ -304,7 +279,7 @@ class FreeCellGame
         cardElement.src = "cards/" + card.getImageRef();
         if (card.isPlaceholder == false)
         {
-        this.ctx.drawImage(cardElement,card.x, card.y, card.width, card.height);
+            this.ctx.drawImage(cardElement,card.x, card.y, card.width, card.height);
         }
     }
 
@@ -530,6 +505,7 @@ class FreeCellGame
         return cardIsBottomOfTableau;
     }
 
+    //Atempts to move movingCard to beneth/above goalCard determing if the move is generaly posible or if its multistep move
     moveCard(movingCard, goalCard)
     {   
         if (movingCard.isInTableau != true || goalCard.isInFoundation || goalCard.isInFreeCell)
@@ -542,12 +518,12 @@ class FreeCellGame
                 }
             }
             else
-            {
-                this.singleCardMove(movingCard,goalCard);
-            }
+                {
+                    this.singleCardMove(movingCard,goalCard);
+                }
         }
         
-        else if (this.tableaus[movingCard.tableauNumber].cards.length - 1 != movingCard.tableauInternalPosition && this.cardIsBottomOfTableau(goalCard))
+        else if ((this.cardIsBottomOfTableau(movingCard) == false) && this.cardIsBottomOfTableau(goalCard))
         {
             this.multipleCardMovement(movingCard,goalCard);
         }
@@ -556,17 +532,7 @@ class FreeCellGame
         }
     }
 
-    //Visualy at bottom highest in internal position
-    getBelowCardInTableau(inputCard)
-    {
-        this.getCardDistanceBelow(1);
-    }
-
-    getAboveCardInTableau(inputCard)
-    {
-        this.getCardDistanceBelow(-1);    
-    }
-
+    //Honestly a kinda odd function but sometimes its easier to get the card from the array form of tableaus but you have to change the same card that is within the cards instance so you need to get that reference you know
     getInstanceArrayConnectedCardFromCard(inputCard)
     {
         for(let card of this.cardsInstance)
@@ -578,18 +544,7 @@ class FreeCellGame
         }
     }
 
-    //Negative Values to move to view values above card
-    getCardDistanceBelow(inputCard, shiftsDown)
-    {   
-        for (let card of this.cardsInstance)
-        {
-            if (card.tableauNumber == inputCard.tableauNumber && card.tableauInternalPosition == (inputCard.tableauInternalPosition + shiftsDown))
-            {
-                return card;
-            }
-        }
-    }
-
+    //detemines whether a given array is both decreasing in value and alternating in colour returning true or false
     alternatingDecreasingValue(cardArray)
     {
         console.log(cardArray);
@@ -668,20 +623,14 @@ class FreeCellGame
                     movingCard.tableauInternalPosition = goalCard.tableauInternalPosition + 1;
                 }
             }
-    
-            console.log("Moved Cards Run")
             //return (movedMovingCard);
-    }
-
-    getRandomInt(min,max)
-    {
-        return Math.floor(Math.random() * (max - min)) + min;
     }
 
     clearCanvas()
     {
         this.ctx.beginPath();
-        let gradient = this.ctx.createLinearGradient(0,0,0,this.canvas.height);
+        //let gradient = this.ctx.createLinearGradient(0,0,0,this.canvas.height);
+        let gradient = this.ctx.createRadialGradient(this.canvas.width/2,this.canvas.height/2,this.canvas.height/3,this.canvas.width/2,this.canvas.height/2,this.canvas.height*1.25);
         gradient.addColorStop(0, "green");
         gradient.addColorStop(1, "lightgreen");
         this.ctx.fillStyle = gradient;
@@ -701,7 +650,6 @@ class FreeCellGame
             }
         }
         this.maxMoveingCardsAtOnce = ((2**this.getNumberOfEmptyTableaus())*(emptyFreeCells + 1));
-        console.log(this.maxMoveingCardsAtOnce);
     }
 
     winCheck()
@@ -718,7 +666,7 @@ class FreeCellGame
                 }
             }
         }
-        if (cardsInFoundations == 52)
+        if (cardsInFoundations >= 52)
         {
             playerWins = true;
         }
@@ -727,14 +675,9 @@ class FreeCellGame
 
     displayWin()
     {
-        var winElement = document.createElement("img");
-        let winElementLink = "youWinIMAGE";
-        this.ctx.drawImage(winElementLink,this.canvas.width *0.25, this.canvas.height * 0.25, this.canvas.width *0.25, this.canvas.height * 0.25);
-    }
-
-    stopGame()
-    {
-        this.gameRunning = false;
+        this.ctx.font = "70px Arial";
+        this.ctx.fillStyle = 'orange';
+        this.ctx.fillText("YOU WIN", this.canvas.width/3, this.canvas.height/3);
     }
 
     mainGameLoop()
@@ -773,16 +716,5 @@ class FreeCellGame
             {
                 this.displayWin();
             }
-
-            /*
-            setTimeout(() => {
-                requestAnimationFrame(this.mainGameLoop.bind(this));
-            }, 50 );
-            */
-            //update display 
-            //generate hitBoxes
-            //collect input
-            //store clicks
-            //After two clicks atempt to perform movement
     }
 }

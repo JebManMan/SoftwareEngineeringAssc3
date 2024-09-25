@@ -51,7 +51,6 @@ class Foundation
                 }
             }
         }
-        console.log(highestValue);
         return highestValue;
     }
 }
