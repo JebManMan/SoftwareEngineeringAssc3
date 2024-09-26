@@ -680,20 +680,9 @@ class FreeCellGame
         this.ctx.fillText("YOU WIN", this.canvas.width/3, this.canvas.height/3);
     }
 
+    //
     mainGameLoop()
     {
-            //this.updateTableausFoundationsFreeCells();
-            //this.clearCanvas();
-            //this.updateDisplay();
-
-            /*
-            if (this.cardsInstance != this.cardsInstanceCopys[this.cardsInstanceCopys.length - 1])
-            {
-                let cardIntanceCopy = this.cardsInstance;
-                this.cardsInstanceCopys.push(cardIntanceCopy);
-            }
-            */
-
             this.cardsInstance = this.getMainArrayCards();
             this.giveCardsArrayIndexAsAtribute();
 
